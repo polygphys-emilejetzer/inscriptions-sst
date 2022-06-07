@@ -9,6 +9,7 @@ import time
 import schedule
 
 # Bibliothèques maison
+from polygphys.outils.reseau import OneDrive
 from polygphys.outils.reseau.msforms import MSFormConfig, MSForm
 from polygphys.outils.reseau.courriel import Courriel
 
@@ -41,7 +42,7 @@ class SSTSIMDUTInscriptionForm(MSForm):
                 message = 'Bonjour! Il n\'y a pas eu de nouvelles inscriptions cette semaine. Bonne journée!'
                 html = f'<p>{message}</p>'
         except Exception as e:
-            message = 'L\'erreur {e} s\'est produite.'
+            message = f'L\'erreur {e} s\'est produite.'
             html = f'<p>{message}</p>'
 
         courriel = Courriel(self.config.get('courriel', 'destinataire'),
@@ -67,6 +68,9 @@ formulaire = SSTSIMDUTInscriptionForm(config)
 schedule.every().monday.at('09:00').do(formulaire.mise_à_jour)
 
 formulaire.mise_à_jour()
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+try:
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+except KeyboardInterrupt:
+    print('Fin.')

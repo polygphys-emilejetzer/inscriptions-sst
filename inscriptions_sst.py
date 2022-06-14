@@ -65,7 +65,7 @@ config.set('formulaire', 'chemin', str(fichier))
 
 formulaire = SSTSIMDUTInscriptionForm(config)
 
-schedule.every().monday.at('09:00').do(formulaire.mise_à_jour)
+schedule.every().friday.at('13:00').do(formulaire.mise_à_jour)
 
 formulaire.mise_à_jour()
 try:

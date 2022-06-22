@@ -6,6 +6,7 @@ from pathlib import Path
 import time
 
 # Bibliothèque PIPy
+import pandas as pd
 import schedule
 
 # Bibliothèques maison
@@ -24,7 +25,7 @@ class SSTSIMDUTInscriptionForm(MSForm):
 
     def nettoyer(self, cadre):
         cadre = self.convertir_champs(cadre)
-        return cadre.loc[:, ['date', 'Nom', 'Prénom', 'Courriel',
+        return cadre.loc[:, ['date', 'Prénom', 'Nom', 'Courriel',
                              'Matricule', 'Département', 'Langue',
                              'Statut', 'Professeur ou supérieur immédiat']]
 
@@ -32,7 +33,11 @@ class SSTSIMDUTInscriptionForm(MSForm):
         try:
             if not cadre.empty:
                 fichier_temp = Path('nouvelles_entrées.xlsx')
-                cadre.to_excel(fichier_temp)
+                excel_temp = pd.ExcelWriter(str(fichier_temp))
+                français = cadre.loc[cadre.Langue == 'Français', :]
+                english = cadre.loc[cadre.langue == 'English', :]
+                français.to_excel(excel_temp, 'Français')
+                english.to_excel(excel_temp, 'English')
                 pièces_jointes = [fichier_temp]
 
                 message = 'Bonjour! Voici les nouvelles inscriptions à faire pour le SIMDUT. Bonne journée!'

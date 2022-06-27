@@ -31,26 +31,30 @@ class SSTSIMDUTInscriptionForm(MSForm):
 
     def action(self, cadre):
         try:
+            destinataire = self.config.get('courriel', 'destinataire')
+            pièces_jointes = []
+            message = 'Bonjour! Il n\'y a pas eu de nouvelles inscriptions cette semaine. Bonne journée!'
+            html = f'<p>{message}</p>'
+
             if not cadre.empty:
                 fichier_temp = Path('nouvelles_entrées.xlsx')
-                excel_temp = pd.ExcelWriter(str(fichier_temp))
-                français = cadre.loc[cadre.Langue == 'Français', :]
-                english = cadre.loc[cadre.langue == 'English', :]
-                français.to_excel(excel_temp, 'Français')
-                english.to_excel(excel_temp, 'English')
-                pièces_jointes = [fichier_temp]
+                with pd.ExcelWriter(str(fichier_temp)) as excel_temp:
+                    français = cadre.loc[cadre.Langue == 'Français', :]
+                    english = cadre.loc[cadre.Langue == 'English', :]
+                    français.to_excel(excel_temp, 'Français')
+                    english.to_excel(excel_temp, 'English')
+                pièces_jointes.append(fichier_temp)
 
+                #destinataire = destinataire\
+                #   + ','\
+                #       + self.config.get('courriel', 'superviseur')
                 message = 'Bonjour! Voici les nouvelles inscriptions à faire pour le SIMDUT. Bonne journée!'
                 html = f'<p>{message}</p>{cadre.to_html()}'
-            else:
-                pièces_jointes = []
-                message = 'Bonjour! Il n\'y a pas eu de nouvelles inscriptions cette semaine. Bonne journée!'
-                html = f'<p>{message}</p>'
         except Exception as e:
             message = f'L\'erreur {e} s\'est produite.'
             html = f'<p>{message}</p>'
 
-        courriel = Courriel(self.config.get('courriel', 'destinataire'),
+        courriel = Courriel(destinataire,
                             self.config.get('courriel', 'expéditeur'),
                             self.config.get('courriel', 'objet'),
                             message,

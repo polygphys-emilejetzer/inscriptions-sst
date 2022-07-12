@@ -2,6 +2,7 @@
 """Transmettre les nouvelles inscriptions au SIMDUT."""
 
 # Bibliothèque standard
+from datetime import datetime
 from pathlib import Path
 import time
 
@@ -30,6 +31,7 @@ class SSTSIMDUTInscriptionForm(MSForm):
                              'Statut', 'Professeur ou supérieur immédiat']]
 
     def action(self, cadre):
+        print(f'Mise à jour {datetime.now()}...')
         try:
             destinataire = self.config.get('courriel', 'destinataire')
             pièces_jointes = []
@@ -78,6 +80,7 @@ schedule.every().friday.at('13:00').do(formulaire.mise_à_jour)
 
 formulaire.mise_à_jour()
 try:
+    print('On commence...')
     while True:
         schedule.run_pending()
         time.sleep(1)

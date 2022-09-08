@@ -31,7 +31,6 @@ class SSTSIMDUTInscriptionForm(MSForm):
                              'Statut', 'Professeur ou supérieur immédiat']]
 
     def action(self, cadre):
-        print(f'Mise à jour {datetime.now()}...')
         try:
             destinataire = self.config.get('courriel', 'destinataire')
             pièces_jointes = []
@@ -39,20 +38,41 @@ class SSTSIMDUTInscriptionForm(MSForm):
             html = f'<p>{message}</p>'
 
             if not cadre.empty:
-                français = cadre.loc[cadre.Langue == 'Français', :]
-                english = cadre.loc[cadre.Langue == 'English', :]
+                français = cadre.loc[cadre.Langue == 'Français',
+                                     ['Prénom',
+                                      'Nom',
+                                      'Courriel',
+                                      'Matricule',
+                                      'Département',
+                                      'Langue',
+                                      'Statut']]
+                english = cadre.loc[cadre.Langue == 'English',
+                                    ['Prénom',
+                                     'Nom',
+                                     'Courriel',
+                                     'Matricule',
+                                     'Département',
+                                     'Langue',
+                                     'Statut']]
 
                 français.to_excel('simdut_français.xlsx', index=False)
                 english.to_excel('simdut_english.xlsx', index=False)
 
-                pièces_jointes.append('simdut_français.xlsx')
-                pièces_jointes.append('simdut_english.xlsx')
+                if not français.empty:
+                    pièces_jointes.append('simdut_français.xlsx')
+                if not english.empty:
+                    pièces_jointes.append('simdut_english.xlsx')
 
                 # destinataire = destinataire\
                 #   + ','\
                 #       + self.config.get('courriel', 'superviseur')
                 message = 'Bonjour! Voici les nouvelles inscriptions à faire pour le SIMDUT. Bonne journée!'
-                html = f'<p>{message}</p><hr/>{français.to_html(index=False)}<hr/>{english.to_html(index=False)}'
+
+                html = f'<p>{message}</p>'
+                if not français.empty:
+                    html += f'<hr/>{français.to_html(index=False)}'
+                if not english.empty:
+                    html += f'<hr/>{english.to_html(index=False)}'
         except Exception as e:
             message = f'L\'erreur {e} s\'est produite.'
             html = f'<p>{message}</p>'

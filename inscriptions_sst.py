@@ -64,9 +64,9 @@ class SSTSIMDUTInscriptionForm(MSForm):
                 if not english.empty:
                     pièces_jointes.append('simdut_english.xlsx')
 
-                # destinataire = destinataire\
-                #   + ','\
-                #       + self.config.get('courriel', 'superviseur')
+                destinataire = destinataire\
+                    + ','\
+                    + self.config.get('courriel', 'superviseur')
                 message = 'Bonjour! Voici les nouvelles inscriptions à faire pour le SIMDUT. Bonne journée!'
 
                 html = f'<p>{message}</p>'

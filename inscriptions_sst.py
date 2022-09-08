@@ -26,6 +26,9 @@ class SSTSIMDUTInscriptionForm(MSForm):
 
     def nettoyer(self, cadre):
         cadre = self.convertir_champs(cadre)
+
+        cadre.Matricule = cadre.Matricule.replace('', cadre.Matricule2)
+
         return cadre.loc[:, ['date', 'Prénom', 'Nom', 'Courriel',
                              'Matricule', 'Département', 'Langue',
                              'Statut', 'Professeur ou supérieur immédiat']]
